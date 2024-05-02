@@ -1,0 +1,4 @@
+# ignore .exe , .exp and .lib files
+*.exe
+*.exp
+*.lib
