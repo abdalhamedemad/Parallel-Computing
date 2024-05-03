@@ -136,6 +136,55 @@ void vertex_centric_top_down_forntier(unsigned int *d_row, unsigned int *d_col, 
         }
     }
 }
+__global__
+void vertex_centric_top_down_forntier_privatization(unsigned int *d_row, unsigned int *d_col, unsigned int *d_row_size, unsigned int *d_col_size, unsigned int *d_level, unsigned int *d_new_vertex_visited, unsigned int *d_current_level
+,unsigned int * prev_forntier,  unsigned int * current_forntier, unsigned int * prev_forntier_size, unsigned int * current_forntier_index) {
+    
+    
+    __shared__ unsigned int curr_forntier_shared[200];
+    __shared__ unsigned int curr_forntier_index_shared;
+    // i want only one thread initialized curr_forntier_idex with zero
+    if (threadIdx.x ==0)
+        curr_forntier_index_shared =0;
+    // to insure that non of the threads start befor intialization
+    __syncthreads();
+    
+    unsigned int tx = blockIdx.x * blockDim.x + threadIdx.x;
+    if(tx < *prev_forntier_size){
+        unsigned int vertex = prev_forntier[tx];
+        for (unsigned int i = d_row[vertex]; i < d_row[vertex + 1]; ++i) {
+            if(atomicCAS(&d_level[d_col[i]],UINT_MAX,*d_current_level) == UINT_MAX){
+                // here we use atomicAdd because it may occur a race condition that multiple thread
+                // can edit the current_forntier idx at same time
+                // curr_forntier_shared[atomicAdd(&curr_forntier_index_shared, 1)] = d_col[i];
+                // *d_new_vertex_visited = 1;
+
+                // if it exceed the shared memory size we will add the rest to the global memory
+                if ( curr_forntier_index_shared < 200)
+                {
+                    curr_forntier_shared[atomicAdd(&curr_forntier_index_shared, 1)] = d_col[i];
+                    
+                }else {
+                current_forntier[atomicAdd(current_forntier_index, 1)] = d_col[i];
+                }
+            }
+        }
+    }
+    __syncthreads();
+    __shared__ unsigned int curr_forntier_start_idx;
+    // copy the shared memory to the global memory
+    if (threadIdx.x ==0){
+    // increment the global counter by the size of the queue
+        curr_forntier_start_idx =atomicAdd(current_forntier_index, curr_forntier_index_shared);
+    }
+    __syncthreads();
+    // copy the shared memory to the global memory
+    for (int i = threadIdx.x; i < curr_forntier_index_shared; i+=blockDim.x)
+    {
+        current_forntier[curr_forntier_start_idx + i] = curr_forntier_shared[i];
+    }
+}
+
 void convert_adj_matrix_to_csr(vector<vector<unsigned int>> adjacency_matrix, unsigned int num_nodes, CSR &csr) {
     csr.row[0] = 0;
     csr.row_size = 1;
