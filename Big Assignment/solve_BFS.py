@@ -30,15 +30,17 @@ def bfs(adj_matrix, start):
 
     sorted_levels = sorted(level_dict.items(), key=lambda x: x[0])  # Sort levels based on node number
 
-    for node, level in sorted_levels:
-        print("Node:", node, "Level:", level)
+    # for node, level in sorted_levels:
+    #     print("Node:", node, "Level:", level)
     # save the levels to a file
     with open("bfs_levels.txt", "w") as file:
         for node, level in sorted_levels:
-            file.write(f"{node} {level}\n")
+            # file.write(f"{node} {level}\n")
+            file.write(f"{level}\n")
+            
 
 def main():
-    filename = "adjacency_matrix.txt"  # Change this to the filename of your adjacency matrix
+    filename = "adjacency_matrixd.txt"  # Change this to the filename of your adjacency matrix
 
     adjacency_matrix, num_nodes = read_adjacency_matrix(filename)
     

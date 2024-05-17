@@ -67,8 +67,10 @@ void bfs_kernel_top_down(unsigned int *d_row, unsigned int *d_col, unsigned int 
 
     }
     if (vertex < *d_row_size) {
+        // if vertex is in the current level
         if (d_level[vertex] == *d_current_level - 1) {
             for (unsigned int i = d_row[vertex]; i < d_row[vertex + 1]; ++i) {
+                // if the neighbor is not visited
                 if (d_level[d_col[i]] == UINT_MAX) {
                     d_level[d_col[i]] = *d_current_level;
                     *d_new_vertex_visited = 1;
@@ -162,7 +164,7 @@ void convert_adj_matrix_to_coo(vector<vector<unsigned int>> adjacency_matrix, un
 
 // edge centric BFS
 int main(){
-  string filename = "adjacency_matrix.txt";
+  string filename = "adjacency_matrix2.txt";
     unsigned int num_nodes;
     
     vector<vector<unsigned int>> adjacency_matrix = read_adjacency_matrix(filename, num_nodes);
@@ -271,6 +273,11 @@ int main(){
     cout << "Level of each vertex:" << endl;
     for (int i = 0; i < num_nodes; ++i) {
         cout << "Vertex " << i << ": " << level[i] << endl;
+    }
+    ofstream output_file;
+    output_file.open("output1.txt");
+    for (int i = 0; i < num_nodes; ++i) {
+        output_file << level[i] << endl;
     }
     // free memory on the device
     cudaFree(d_row);

@@ -13,9 +13,9 @@ def save_adjacency_matrix(graph, filename):
         np.savetxt(file, adjacency_matrix.toarray(), fmt='%d')
 
 def main():
-    num_nodes = 10  # Change this to the desired number of nodes
+    num_nodes = 100  # Change this to the desired number of nodes
     probability = 0.3  # Change this to the desired probability for edge creation
-    filename = "adjacency_matrix.txt"  # Change this to the desired filename
+    filename = "adjacency_matrix3.txt"  # Change this to the desired filename
     
     # Generate random graph
     graph = generate_random_graph(num_nodes, probability)
