@@ -46,10 +46,10 @@ int main(int argc, char *argv[]) {
     // Print the elapsed time
     cout << "Elapsed time: " << elapsed_seconds.count() << "s" << endl;
     // Print the level of each vertex
-    cout << "Level of each vertex:" << endl;
-    for (int i = 0; i < num_nodes; ++i) {
-        cout << "Vertex " << i << ": " << level[i] << endl;
-    }
+    // cout << "Level of each vertex:" << endl;
+    // for (int i = 0; i < num_nodes; ++i) {
+    //     cout << "Vertex " << i << ": " << level[i] << endl;
+    // }
 
     // Save the levels to a file
     ofstream output_file;
