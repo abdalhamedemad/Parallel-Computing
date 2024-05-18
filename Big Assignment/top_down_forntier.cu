@@ -98,11 +98,11 @@ int main(int argc, char *argv[]) {
     convert_adj_matrix_to_csr(adjacency_matrix, num_nodes, csr);
 
     // unsigned int level[MAX_NODES];
-    vector<unsigned int> level(num_nodes);
+    vector<unsigned int> level(num_nodes , UINT_MAX);
 
-    for (int i = 0; i < num_nodes; ++i) {
-        level[i] = UINT_MAX;
-    }
+    // for (int i = 0; i < num_nodes; ++i) {
+    //     level[i] = UINT_MAX;
+    // }
 
     // starting node
     level[0] = 0;

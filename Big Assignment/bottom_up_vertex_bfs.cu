@@ -115,10 +115,13 @@ int main(int argc, char *argv[]){
     // }
     // cout << endl;
     // unsigned int level = 0;
-    unsigned int level[MAX_NODES];
-    for (int i = 0; i < num_nodes; ++i) {
-        level[i] = UINT_MAX;
-    }
+    // unsigned int level[MAX_NODES];
+    // vector<unsigned int> level(num_nodes);
+    vector<unsigned int> level(num_nodes, UINT_MAX);
+
+    // for (int i = 0; i < num_nodes; ++i) {
+    //     level[i] = UINT_MAX;
+    // }
     level[0] = 0;
     unsigned int new_vertex_visited = 0;
     unsigned int current_level = 0;
@@ -145,7 +148,7 @@ int main(int argc, char *argv[]){
     cudaMemcpy(d_row_size, &csc.row_size, sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_col_size, &csc.col_size, sizeof(unsigned int), cudaMemcpyHostToDevice);
     // cudaMemcpy(d_level, &level, sizeof(unsigned int), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_level, &level, num_nodes * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_level, level.data(), num_nodes * sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_num_of_nodes, &num_nodes, sizeof(unsigned int), cudaMemcpyHostToDevice);
     // cudaMemcpy(d_new_vertex_visited, &new_vertex_visited, sizeof(unsigned int), cudaMemcpyHostToDevice);
     // cudaMemcpy(d_current_level, &current_level, sizeof(unsigned int), cudaMemcpyHostToDevice);
@@ -176,7 +179,7 @@ int main(int argc, char *argv[]){
         cudaMemcpy(&new_vertex_visited, d_new_vertex_visited, sizeof(unsigned int), cudaMemcpyDeviceToHost);
         
     }
-    cudaMemcpy(level, d_level, num_nodes * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(level.data(), d_level, num_nodes * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     // print the level of each vertex
     // cout << "Level of each vertex:" << endl;
     // for (int i = 0; i < num_nodes; ++i) {

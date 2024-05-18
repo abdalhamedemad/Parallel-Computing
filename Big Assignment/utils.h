@@ -46,6 +46,7 @@ struct CSR {
 };
 
 
+
 void convert_adj_matrix_to_csr(vector<vector<unsigned int>> &adjacency_matrix, unsigned int num_nodes, CSR &csr) {
     csr.row.resize(num_nodes + 1);
     csr.col.clear();

@@ -7,6 +7,8 @@
 using namespace std;
 #include <chrono>
 #include <ctime>
+#define SHAREDMEM 2048
+#define NUM_OF_THREADS 256
 
 
 
@@ -40,7 +42,7 @@ void vertex_centric_top_down_forntier_privatization(unsigned int *d_row, unsigne
 ,unsigned int * prev_forntier,  unsigned int * current_forntier, unsigned int * prev_forntier_size, unsigned int * current_forntier_index) {
     
     
-    __shared__ unsigned int curr_forntier_shared[2048];
+    __shared__ unsigned int curr_forntier_shared[SHAREDMEM];
     __shared__ unsigned int curr_forntier_index_shared;
     // i want only one thread initialized curr_forntier_idex with zero
     if (threadIdx.x ==0)
@@ -59,12 +61,15 @@ void vertex_centric_top_down_forntier_privatization(unsigned int *d_row, unsigne
                 // *d_new_vertex_visited = 1;
 
                 // if it exceed the shared memory size we will add the rest to the global memory
-                if ( curr_forntier_index_shared < 2048)
+                if ( curr_forntier_index_shared < SHAREDMEM)
                 {
                     curr_forntier_shared[atomicAdd(&curr_forntier_index_shared, 1)] = d_col[i];
                     
                 }else {
-                current_forntier[atomicAdd(current_forntier_index, 1)] = d_col[i];
+                // current_forntier[atomicAdd(current_forntier_index, 1)] = d_col[i];
+                curr_forntier_index_shared =  SHAREDMEM;
+                unsigned int curr_forntier_start_idx =atomicAdd(current_forntier_index, 1);
+                current_forntier[curr_forntier_start_idx] = d_col[i];
                 }
             }
         }
@@ -97,10 +102,13 @@ int main(int argc, char *argv[]){
     CSR csr;
     convert_adj_matrix_to_csr(adjacency_matrix, num_nodes, csr);
 
-    unsigned int level[MAX_NODES];
-    for (int i = 0; i < num_nodes; ++i) {
-        level[i] = UINT_MAX;
-    }
+    // unsigned int level[MAX_NODES];
+    // vector<unsigned int> level(num_nodes);
+    vector<unsigned int> level(num_nodes, UINT_MAX);
+
+    // for (int i = 0; i < num_nodes; ++i) {
+    //     level[i] = UINT_MAX;
+    // }
     level[0] = 0;
     unsigned int new_vertex_visited = 0;
     unsigned int current_level = 0;
@@ -133,12 +141,12 @@ int main(int argc, char *argv[]){
     cudaMemcpy(d_col, csr.col.data(), csr.col_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_row_size, &csr.row_size, sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_col_size, &csr.col_size, sizeof(unsigned int), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_level, &level, num_nodes * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_level, level.data(), num_nodes * sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemcpy(d_prev_forntier, &level[0], sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemset(d_prev_forntier_size, 1, sizeof(unsigned int));
     // kernel call
     auto start = chrono::system_clock::now();
-    unsigned int numOfThreads = 128;
+    unsigned int numOfThreads = NUM_OF_THREADS;
     unsigned int numOfBlocks = (num_nodes + numOfThreads - 1) / numOfThreads;
     new_vertex_visited = 1;
     
@@ -161,7 +169,7 @@ int main(int argc, char *argv[]){
     // Print the elapsed time
     cout << "Elapsed time: " << elapsed_seconds.count() << "s" << endl;
    
-    cudaMemcpy(level, d_level, num_nodes * sizeof(unsigned int), cudaMemcpyDeviceToHost);
+    cudaMemcpy(level.data(), d_level, num_nodes * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     
     // // print the level of each vertex
     // cout << "Level of each vertex:" << endl;
