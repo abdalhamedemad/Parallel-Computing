@@ -46,8 +46,10 @@ void bfs_kernel_top_down(unsigned int *d_row, unsigned int *d_col, unsigned int 
 }
 
 // TOP DOWN
-int main(){
-  string filename = "adjacency_matrixd.txt";
+int main(int argc, char *argv[]){
+    string fileName = argv[1];
+    string filename = "adjacency_matrixd.txt";
+    filename = fileName;
     unsigned int num_nodes;
     
     vector<vector<unsigned int>> adjacency_matrix = read_adjacency_matrix(filename, num_nodes);

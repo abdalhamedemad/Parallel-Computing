@@ -26,8 +26,10 @@ void edge_centric(unsigned int *d_row, unsigned int *d_col, unsigned int *d_row_
 
 
 // edge centric BFS
-int main(){
-  string filename = "adjacency_matrix2.txt";
+int main(int argc, char *argv[]){
+    string fileName = argv[1];
+    string filename = "adjacency_matrix2.txt";
+    filename = fileName;
     unsigned int num_nodes;
     
     vector<vector<unsigned int>> adjacency_matrix = read_adjacency_matrix(filename, num_nodes);

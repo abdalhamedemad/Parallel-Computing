@@ -66,8 +66,10 @@ void vertex_centric_bottom_up(unsigned int *d_row, unsigned int *d_col, unsigned
 
 // Bottom up
 
-int main(){
-  string filename = "adjacency_matrix2.txt";
+int main(int argc, char *argv[]){
+    string fileName = argv[1];
+    string filename = "adjacency_matrix2.txt";
+    filename = fileName;
     unsigned int num_nodes;
     
     vector<vector<unsigned int>> adjacency_matrix = read_adjacency_matrix(filename, num_nodes);
