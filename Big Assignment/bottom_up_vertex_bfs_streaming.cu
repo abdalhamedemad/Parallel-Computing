@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "utils.h"
+#include "utils1.h"
 using namespace std;
 
 __global__
@@ -40,12 +40,13 @@ void vertex_centric_bottom_up(unsigned int *d_row, unsigned int *d_col, unsigned
 int main(int argc, char *argv[]) {
     string fileName = argv[1];
     unsigned int num_nodes;
-    vector<vector<unsigned int>> adjacency_matrix = read_adjacency_matrix(fileName, num_nodes);
+    unsigned int num_edges;
+    vector<vector<unsigned int>> adjacency_list = read_adjacency_list(fileName, num_nodes,num_edges);
 
     CSR csr;
-    convert_adj_matrix_to_csr(adjacency_matrix, num_nodes, csr);
+    convert_adj_list_to_csr(adjacency_list, num_nodes, csr);
     CSC csc;
-    convert_adj_matrix_to_csc(adjacency_matrix, num_nodes, csc);
+    convert_adj_list_to_csc(adjacency_list, num_nodes, csc);
 
     vector<unsigned int> level(num_nodes, UINT_MAX);
     level[0] = 0;

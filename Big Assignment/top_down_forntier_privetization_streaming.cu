@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
-#include "utils.h"
+#include "utils1.h"
 using namespace std;
 
 __global__
@@ -25,10 +25,12 @@ int main(int argc, char *argv[]) {
     string fileName = argv[1];
     string filename = fileName;
     unsigned int num_nodes;
+    unsigned int num_edges;
 
-    vector<vector<unsigned int>> adjacency_matrix = read_adjacency_matrix(filename, num_nodes);
+
+    vector<vector<unsigned int>> adjacency_list = read_adjacency_list(filename, num_nodes,num_edges);
     CSR csr;
-    convert_adj_matrix_to_csr(adjacency_matrix, num_nodes, csr);
+    convert_adj_list_to_csr(adjacency_list, num_nodes, csr);
 
     vector<unsigned int> level(num_nodes, UINT_MAX);
     level[0] = 0;
