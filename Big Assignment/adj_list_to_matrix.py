@@ -14,7 +14,7 @@ def convert_adj_list_to_matrix(adj_list):
 
 def write_matrix_to_file(filename, adj_matrix, num_nodes):
     with open(filename, 'w') as file:
-        file.write(f"Number of nodes: {num_nodes}\n")
+        file.write(f"{num_nodes}\n")
         for row in adj_matrix:
             file.write(" ".join(map(str, row)) + "\n")
 
