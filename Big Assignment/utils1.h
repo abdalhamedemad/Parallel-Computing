@@ -1,24 +1,32 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <unordered_map>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
-vector<vector<unsigned int>> read_adjacency_list(string filename, unsigned int &num_nodes) {
+vector<vector<unsigned int>> read_adjacency_list(string filename, unsigned int &num_nodes, unsigned int &num_edges) {
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error: Unable to open file " << filename << endl;
         exit(1);
     }
 
-    file >> num_nodes;
+    file >> num_nodes >> num_edges;
     vector<vector<unsigned int>> adjacency_list(num_nodes);
 
-    unsigned int node, neighbor;
-    while (file >> node >> neighbor) {
+    string line;
+    getline(file, line);  // Skip the rest of the first line
+    for (unsigned int node = 0; node < num_nodes; ++node) {
+        getline(file, line);
+        stringstream ss(line);
+        unsigned int neighbor;
+        ss >> neighbor;  // Read the first node (should be node itself)
         adjacency_list[node].push_back(neighbor);
+        while (ss >> neighbor) {
+            adjacency_list[node].push_back(neighbor);
+        }
     }
 
     file.close();
@@ -49,8 +57,6 @@ void convert_adj_list_to_csr(const vector<vector<unsigned int>> &adjacency_list,
     csr.row.resize(num_nodes + 1);
     csr.col.clear();
     csr.row[0] = 0;
-    csr.row_size = 1;
-    csr.col_size = 0;
 
     for (unsigned int i = 0; i < num_nodes; ++i) {
         for (unsigned int j : adjacency_list[i]) {
@@ -66,8 +72,6 @@ void convert_adj_list_to_csc(const vector<vector<unsigned int>> &adjacency_list,
     csc.col.resize(num_nodes + 1);
     csc.row.clear();
     csc.col[0] = 0;
-    csc.col_size = 1;
-    csc.row_size = 0;
 
     vector<unsigned int> count(num_nodes, 0);
     for (unsigned int i = 0; i < num_nodes; ++i) {
@@ -107,29 +111,4 @@ void convert_adj_list_to_coo(const vector<vector<unsigned int>> &adjacency_list,
             ++coo.size;
         }
     }
-}
-
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        cerr << "Usage: " << argv[0] << " <filename>" << endl;
-        return 1;
-    }
-
-    string filename = argv[1];
-    unsigned int num_nodes;
-
-    vector<vector<unsigned int>> adjacency_list = read_adjacency_list(filename, num_nodes);
-
-    CSR csr;
-    convert_adj_list_to_csr(adjacency_list, num_nodes, csr);
-
-    CSC csc;
-    convert_adj_list_to_csc(adjacency_list, num_nodes, csc);
-
-    COO coo;
-    convert_adj_list_to_coo(adjacency_list, num_nodes, coo);
-
-    // Output or further processing of csr, csc, and coo structures
-
-    return 0;
 }
