@@ -3,10 +3,14 @@
 #include <vector>
 #include <queue>
 #include "utils.h" 
+// include time
+#include <chrono>
+#include <ctime>
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+    // start time
     string fileName = argv[1];
     string filename = "adjacency_matrixd.txt";
     filename = fileName;
@@ -17,6 +21,7 @@ int main(int argc, char *argv[]) {
     CSR csr;
     convert_adj_matrix_to_csr(adjacency_matrix, num_nodes, csr);
 
+    auto start = chrono::system_clock::now();
     vector<unsigned int> level(num_nodes, UINT_MAX);
     level[0] = 0; // Set the source vertex level to 0
 
@@ -36,7 +41,10 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
+    auto end = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end - start;
+    // Print the elapsed time
+    cout << "Elapsed time: " << elapsed_seconds.count() << "s" << endl;
     // Print the level of each vertex
     cout << "Level of each vertex:" << endl;
     for (int i = 0; i < num_nodes; ++i) {
