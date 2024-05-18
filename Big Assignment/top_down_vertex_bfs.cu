@@ -10,27 +10,7 @@ using namespace std;
 
 __global__
 void bfs_kernel_top_down(unsigned int *d_row, unsigned int *d_col, unsigned int *d_row_size, unsigned int *d_col_size, unsigned int *d_level, unsigned int *d_new_vertex_visited, unsigned int *d_current_level ,unsigned int * num_of_nodes) {
-    
-    
     unsigned int vertex = blockIdx.x * blockDim.x + threadIdx.x;
-    if (vertex == 0 && 0)
-    {
-        printf("d_row_size = %d\n", *d_row_size);
-        printf("d_col_size = %d\n", *d_col_size);
-        printf("d_row = ");
-        for (int i = 0; i < *d_row_size; ++i) {
-            printf("%d ", d_row[i]);
-        }
-        printf("\n");
-        printf("d_col = ");
-        for (int i = 0; i < *d_col_size; ++i) {
-            printf("%d ", d_col[i]);
-        }
-        printf("\n");
-
-
-
-    }
     if (vertex < *num_of_nodes) {
         // if vertex is in the current level
         if (d_level[vertex] == *d_current_level - 1) {
