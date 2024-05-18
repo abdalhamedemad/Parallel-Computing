@@ -5,6 +5,9 @@
 #include <vector>
 #include "utils.h"
 using namespace std;
+#include <chrono>
+#include <ctime>
+
 
 
 
@@ -134,6 +137,7 @@ int main(int argc, char *argv[]){
     cudaMemcpy(d_prev_forntier, &level[0], sizeof(unsigned int), cudaMemcpyHostToDevice);
     cudaMemset(d_prev_forntier_size, 1, sizeof(unsigned int));
     // kernel call
+    auto start = chrono::system_clock::now();
     unsigned int numOfThreads = 128;
     unsigned int numOfBlocks = (num_nodes + numOfThreads - 1) / numOfThreads;
     new_vertex_visited = 1;
@@ -152,13 +156,18 @@ int main(int argc, char *argv[]){
         d_current_forntier = temp;
         cudaMemcpy(&h_prev_forntier_size,d_current_forntier_index,sizeof(unsigned int),cudaMemcpyDeviceToHost);
     }
+    auto end = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end - start;
+    // Print the elapsed time
+    cout << "Elapsed time: " << elapsed_seconds.count() << "s" << endl;
+   
     cudaMemcpy(level, d_level, num_nodes * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     
-    // print the level of each vertex
-    cout << "Level of each vertex:" << endl;
-    for (int i = 0; i < num_nodes; ++i) {
-        cout << "Vertex " << i << ": " << level[i] << endl;
-    }
+    // // print the level of each vertex
+    // cout << "Level of each vertex:" << endl;
+    // for (int i = 0; i < num_nodes; ++i) {
+    //     cout << "Vertex " << i << ": " << level[i] << endl;
+    // }
     
     // save to file
     ofstream output_file;

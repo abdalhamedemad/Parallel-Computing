@@ -137,10 +137,10 @@ int main(int argc, char *argv[]){
     }
     cudaMemcpy(level, d_level, num_nodes * sizeof(unsigned int), cudaMemcpyDeviceToHost);
     // print the level of each vertex
-    cout << "Level of each vertex:" << endl;
-    for (int i = 0; i < num_nodes; ++i) {
-        cout << "Vertex " << i << ": " << level[i] << endl;
-    }
+    // cout << "Level of each vertex:" << endl;
+    // for (int i = 0; i < num_nodes; ++i) {
+    //     cout << "Vertex " << i << ": " << level[i] << endl;
+    // }
     ofstream output_file;
     output_file.open("output.txt");
     for (int i = 0; i < num_nodes; ++i) {
